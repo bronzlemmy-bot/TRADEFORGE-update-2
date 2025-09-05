@@ -1,0 +1,1038 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradePro - Modern Trading Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                    chart: {
+                        "1": "var(--chart-1)",
+                        "2": "var(--chart-2)",
+                        "3": "var(--chart-3)",
+                        "4": "var(--chart-4)",
+                        "5": "var(--chart-5)",
+                    }
+                },
+                fontFamily: {
+                    sans: ["Inter", "var(--font-sans)"],
+                    mono: ["JetBrains Mono", "var(--font-mono)"],
+                },
+                animation: {
+                    'fade-in': 'fadeIn 0.5s ease-in-out',
+                    'slide-up': 'slideUp 0.6s ease-out',
+                    'float': 'float 3s ease-in-out infinite',
+                }
+            },
+        }
+    };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --background: hsl(222 20% 11%);
+            --foreground: hsl(210 40% 96%);
+            --card: hsl(222 20% 11%);
+            --card-foreground: hsl(210 40% 96%);
+            --popover: hsl(222 20% 11%);
+            --popover-foreground: hsl(210 40% 96%);
+            --primary: hsl(217 91% 60%);
+            --primary-foreground: hsl(222 84% 4%);
+            --secondary: hsl(217 32% 17%);
+            --secondary-foreground: hsl(210 40% 98%);
+            --muted: hsl(217 32% 17%);
+            --muted-foreground: hsl(215 20% 65%);
+            --accent: hsl(159 80% 40%);
+            --accent-foreground: hsl(210 40% 98%);
+            --destructive: hsl(0 63% 31%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(217 32% 17%);
+            --input: hsl(217 32% 17%);
+            --ring: hsl(217 91% 60%);
+            --chart-1: hsl(217 91% 60%);
+            --chart-2: hsl(159 80% 40%);
+            --chart-3: hsl(32 95% 44%);
+            --chart-4: hsl(346 87% 43%);
+            --chart-5: hsl(262 83% 58%);
+            --radius: 12px;
+        }
+
+        * {
+            border-color: hsl(var(--border));
+        }
+
+        body {
+            background: linear-gradient(135deg, hsl(222 20% 8%) 0%, hsl(217 32% 12%) 100%);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-border {
+            background: linear-gradient(135deg, hsl(217 91% 60%), hsl(159 80% 40%));
+            padding: 1px;
+            border-radius: 12px;
+        }
+
+        .gradient-border > div {
+            background: hsl(222 20% 11%);
+            border-radius: 11px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .chart-placeholder {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-placeholder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .floating-label {
+            transition: all 0.3s ease;
+        }
+
+        .floating-label.active {
+            transform: translateY(-1.5rem) scale(0.875);
+            color: hsl(217 91% 60%);
+        }
+
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-background text-foreground">
+    <!-- @COMPONENT: Navbar [sticky navigation with mobile menu] -->
+    <nav class="fixed top-0 w-full z-50 glass-card border-b border-border/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-sm"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TradePro</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="nav-link text-muted-foreground hover:text-foreground transition-colors duration-200">Home</a>
+                    <a href="#about" class="nav-link text-muted-foreground hover:text-foreground transition-colors duration-200">About</a>
+                    <a href="#features" class="nav-link text-muted-foreground hover:text-foreground transition-colors duration-200">Features</a>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="showPage('signin')" class="text-muted-foreground hover:text-foreground transition-colors duration-200">Sign In</button>
+                        <button onclick="showPage('signup')" class="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-primary/25">Get Started</button>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-foreground p-2">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu fixed top-16 left-0 w-full h-screen glass-card md:hidden">
+            <div class="flex flex-col space-y-6 p-6">
+                <a href="#home" class="text-lg text-muted-foreground hover:text-foreground transition-colors">Home</a>
+                <a href="#about" class="text-lg text-muted-foreground hover:text-foreground transition-colors">About</a>
+                <a href="#features" class="text-lg text-muted-foreground hover:text-foreground transition-colors">Features</a>
+                <hr class="border-border">
+                <button onclick="showPage('signin')" class="text-left text-lg text-muted-foreground hover:text-foreground transition-colors">Sign In</button>
+                <button onclick="showPage('signup')" class="text-left bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-3 rounded-lg transition-all duration-200">Get Started</button>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navbar -->
+
+    <!-- Page Container -->
+    <div class="pt-16">
+        <!-- @COMPONENT: HomePage [animated hero with gradient background] -->
+        <div id="home-page" class="page-content">
+            <!-- Hero Section -->
+            <section class="min-h-screen flex items-center justify-center relative overflow-hidden">
+                <!-- Background gradient with floating elements -->
+                <div class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20"></div>
+                <div class="absolute top-20 left-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float"></div>
+                <div class="absolute bottom-20 right-20 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float" style="animation-delay: 1s;"></div>
+                
+                <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <div class="animate-fade-in">
+                        <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-pulse">
+                            Trade Smarter,<br>Not Harder
+                        </h1>
+                        <p class="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
+                            Advanced trading platform with real-time analytics, AI-powered insights, and professional-grade tools for modern traders.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                            <button onclick="showPage('signup')" class="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 hover:shadow-xl hover:shadow-primary/25 hover:scale-105">
+                                Start Trading Now
+                            </button>
+                            <button onclick="showPage('about')" class="glass-card px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 hover:shadow-xl hover:bg-white/5">
+                                Learn More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Grid -->
+            <section class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold mb-4">Why Choose TradePro?</h2>
+                    <p class="text-xl text-muted-foreground">Professional trading tools designed for modern investors</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Feature Card 1 -->
+                    <div class="glass-card p-8 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:scale-105 animate-slide-up">
+                        <div class="w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center mb-6">
+                            <i class="fas fa-chart-line text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-4">Real-time Analytics</h3>
+                        <p class="text-muted-foreground">Advanced charting tools with real-time market data and technical indicators.</p>
+                    </div>
+
+                    <!-- Feature Card 2 -->
+                    <div class="glass-card p-8 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-accent/10 hover:scale-105 animate-slide-up" style="animation-delay: 0.1s;">
+                        <div class="w-12 h-12 bg-gradient-to-r from-accent to-primary rounded-lg flex items-center justify-center mb-6">
+                            <i class="fas fa-robot text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-4">AI-Powered Insights</h3>
+                        <p class="text-muted-foreground">Machine learning algorithms provide intelligent trading recommendations.</p>
+                    </div>
+
+                    <!-- Feature Card 3 -->
+                    <div class="glass-card p-8 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:scale-105 animate-slide-up" style="animation-delay: 0.2s;">
+                        <div class="w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center mb-6">
+                            <i class="fas fa-shield-alt text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-4">Bank-level Security</h3>
+                        <p class="text-muted-foreground">Enterprise-grade security with multi-factor authentication and encryption.</p>
+                    </div>
+
+                    <!-- Feature Card 4 -->
+                    <div class="glass-card p-8 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-accent/10 hover:scale-105 animate-slide-up" style="animation-delay: 0.3s;">
+                        <div class="w-12 h-12 bg-gradient-to-r from-accent to-primary rounded-lg flex items-center justify-center mb-6">
+                            <i class="fas fa-mobile-alt text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-4">Mobile Trading</h3>
+                        <p class="text-muted-foreground">Trade on the go with our responsive mobile-first platform design.</p>
+                    </div>
+
+                    <!-- Feature Card 5 -->
+                    <div class="glass-card p-8 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:scale-105 animate-slide-up" style="animation-delay: 0.4s;">
+                        <div class="w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center mb-6">
+                            <i class="fas fa-clock text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-4">24/7 Support</h3>
+                        <p class="text-muted-foreground">Round-the-clock customer support and market monitoring.</p>
+                    </div>
+
+                    <!-- Feature Card 6 -->
+                    <div class="glass-card p-8 rounded-xl transition-all duration-300 hover:shadow-xl hover:shadow-accent/10 hover:scale-105 animate-slide-up" style="animation-delay: 0.5s;">
+                        <div class="w-12 h-12 bg-gradient-to-r from-accent to-primary rounded-lg flex items-center justify-center mb-6">
+                            <i class="fas fa-users text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-4">Community</h3>
+                        <p class="text-muted-foreground">Connect with traders worldwide and share insights and strategies.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- @END_COMPONENT: HomePage -->
+
+        <!-- @COMPONENT: AboutPage [clean layout with motion fade-ins] -->
+        <div id="about-page" class="page-content hidden">
+            <section class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="text-center mb-16 animate-fade-in">
+                    <h1 class="text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">About TradePro</h1>
+                    <p class="text-xl text-muted-foreground max-w-3xl mx-auto">Empowering traders with cutting-edge technology and professional-grade tools</p>
+                </div>
+
+                <!-- Mission Statement -->
+                <div class="glass-card p-12 rounded-xl mb-16 animate-slide-up">
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <h2 class="text-3xl font-bold mb-6">Our Mission</h2>
+                            <p class="text-lg text-muted-foreground mb-6 leading-relaxed">
+                                At TradePro, we believe that everyone deserves access to professional-grade trading tools. Our mission is to democratize trading by providing intuitive, powerful, and secure platforms that level the playing field for all investors.
+                            </p>
+                            <p class="text-lg text-muted-foreground leading-relaxed">
+                                We combine cutting-edge technology with user-friendly design to create trading experiences that are both powerful and accessible.
+                            </p>
+                        </div>
+                        <div class="relative">
+                            <!-- Modern trading dashboard mockup illustration -->
+                            <div class="chart-placeholder h-80 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-chart-area text-primary text-6xl opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                    <div class="text-center glass-card p-8 rounded-xl animate-slide-up">
+                        <div class="text-4xl font-bold text-primary mb-2" data-mock="true">250K+</div>
+                        <div class="text-muted-foreground">Active Traders</div>
+                    </div>
+                    <div class="text-center glass-card p-8 rounded-xl animate-slide-up" style="animation-delay: 0.1s;">
+                        <div class="text-4xl font-bold text-accent mb-2" data-mock="true">$2.1B</div>
+                        <div class="text-muted-foreground">Volume Traded</div>
+                    </div>
+                    <div class="text-center glass-card p-8 rounded-xl animate-slide-up" style="animation-delay: 0.2s;">
+                        <div class="text-4xl font-bold text-primary mb-2" data-mock="true">99.9%</div>
+                        <div class="text-muted-foreground">Uptime</div>
+                    </div>
+                    <div class="text-center glass-card p-8 rounded-xl animate-slide-up" style="animation-delay: 0.3s;">
+                        <div class="text-4xl font-bold text-accent mb-2" data-mock="true">150+</div>
+                        <div class="text-muted-foreground">Markets</div>
+                    </div>
+                </div>
+
+                <!-- Team Section -->
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold mb-12">Leadership Team</h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <!-- Team Member 1 -->
+                        <div class="glass-card p-8 rounded-xl text-center animate-slide-up">
+                            <div class="w-24 h-24 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mb-6 flex items-center justify-center">
+                                <i class="fas fa-user text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2" data-mock="true">Sarah Chen</h3>
+                            <p class="text-primary mb-4" data-mock="true">CEO & Co-Founder</p>
+                            <p class="text-muted-foreground text-sm" data-mock="true">Former Goldman Sachs VP with 15+ years in fintech innovation</p>
+                        </div>
+
+                        <!-- Team Member 2 -->
+                        <div class="glass-card p-8 rounded-xl text-center animate-slide-up" style="animation-delay: 0.1s;">
+                            <div class="w-24 h-24 bg-gradient-to-r from-accent to-primary rounded-full mx-auto mb-6 flex items-center justify-center">
+                                <i class="fas fa-user text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2" data-mock="true">Marcus Rodriguez</h3>
+                            <p class="text-accent mb-4" data-mock="true">CTO & Co-Founder</p>
+                            <p class="text-muted-foreground text-sm" data-mock="true">Ex-Stripe engineer specializing in high-frequency trading systems</p>
+                        </div>
+
+                        <!-- Team Member 3 -->
+                        <div class="glass-card p-8 rounded-xl text-center animate-slide-up" style="animation-delay: 0.2s;">
+                            <div class="w-24 h-24 bg-gradient-to-r from-primary to-accent rounded-full mx-auto mb-6 flex items-center justify-center">
+                                <i class="fas fa-user text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2" data-mock="true">Emily Johnson</h3>
+                            <p class="text-primary mb-4" data-mock="true">Head of Security</p>
+                            <p class="text-muted-foreground text-sm" data-mock="true">Cybersecurity expert with background in financial compliance</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- @END_COMPONENT: AboutPage -->
+
+        <!-- @COMPONENT: SignupPage [animated form with floating labels] -->
+        <div id="signup-page" class="page-content hidden">
+            <section class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+                <div class="max-w-md w-full space-y-8">
+                    <div class="text-center animate-fade-in">
+                        <div class="w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-xl mx-auto mb-6 flex items-center justify-center">
+                            <i class="fas fa-user-plus text-white text-2xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold mb-2">Create Account</h2>
+                        <p class="text-muted-foreground">Join thousands of successful traders</p>
+                    </div>
+
+                    <div class="glass-card p-8 rounded-xl animate-slide-up">
+                        <form class="space-y-6" data-event="submit:handleSignup">
+                            <!-- @FUNCTIONALITY: Form should validate inputs and call POST /api/auth/signup -->
+                            <div class="relative">
+                                <input type="text" id="signup-name" class="peer w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200" placeholder="Full Name" data-bind="user.fullName" data-mock="true" />
+                                <label for="signup-name" class="floating-label absolute left-4 top-3 text-muted-foreground pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:active">Full Name</label>
+                            </div>
+
+                            <div class="relative">
+                                <input type="email" id="signup-email" class="peer w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200" placeholder="Email Address" data-bind="user.email" data-mock="true" />
+                                <label for="signup-email" class="floating-label absolute left-4 top-3 text-muted-foreground pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:active">Email Address</label>
+                            </div>
+
+                            <div class="relative">
+                                <input type="password" id="signup-password" class="peer w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200" placeholder="Password" data-bind="user.password" data-mock="true" />
+                                <label for="signup-password" class="floating-label absolute left-4 top-3 text-muted-foreground pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:active">Password</label>
+                                <button type="button" class="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+
+                            <div class="relative">
+                                <input type="password" id="signup-confirm" class="peer w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200" placeholder="Confirm Password" data-mock="true" />
+                                <label for="signup-confirm" class="floating-label absolute left-4 top-3 text-muted-foreground pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:active">Confirm Password</label>
+                            </div>
+
+                            <div class="flex items-start">
+                                <input type="checkbox" id="terms" class="mt-1 h-4 w-4 text-primary bg-input border-border rounded focus:ring-primary" data-mock="true" />
+                                <label for="terms" class="ml-3 text-sm text-muted-foreground">
+                                    I agree to the <a href="#" class="text-primary hover:underline">Terms of Service</a> and <a href="#" class="text-primary hover:underline">Privacy Policy</a>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-lg font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-primary/25 hover:scale-105" data-implementation="Should validate form and call signup API">
+                                Create Account
+                            </button>
+                        </form>
+
+                        <div class="mt-6 text-center">
+                            <p class="text-muted-foreground">
+                                Already have an account? 
+                                <button onclick="showPage('signin')" class="text-primary hover:underline font-medium">Sign in</button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- @END_COMPONENT: SignupPage -->
+
+        <!-- @COMPONENT: SigninPage [similar style as signup with animations] -->
+        <div id="signin-page" class="page-content hidden">
+            <section class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+                <div class="max-w-md w-full space-y-8">
+                    <div class="text-center animate-fade-in">
+                        <div class="w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-xl mx-auto mb-6 flex items-center justify-center">
+                            <i class="fas fa-sign-in-alt text-white text-2xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold mb-2">Welcome Back</h2>
+                        <p class="text-muted-foreground">Sign in to your trading account</p>
+                    </div>
+
+                    <div class="glass-card p-8 rounded-xl animate-slide-up">
+                        <form class="space-y-6" data-event="submit:handleSignin">
+                            <!-- @FUNCTIONALITY: Form should authenticate user and store JWT in localStorage -->
+                            <div class="relative">
+                                <input type="email" id="signin-email" class="peer w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200" placeholder="Email Address" data-bind="credentials.email" data-mock="true" />
+                                <label for="signin-email" class="floating-label absolute left-4 top-3 text-muted-foreground pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:active">Email Address</label>
+                            </div>
+
+                            <div class="relative">
+                                <input type="password" id="signin-password" class="peer w-full px-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200" placeholder="Password" data-bind="credentials.password" data-mock="true" />
+                                <label for="signin-password" class="floating-label absolute left-4 top-3 text-muted-foreground pointer-events-none peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:active">Password</label>
+                                <button type="button" class="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="remember" class="h-4 w-4 text-primary bg-input border-border rounded focus:ring-primary" data-mock="true" />
+                                    <label for="remember" class="ml-2 text-sm text-muted-foreground">Remember me</label>
+                                </div>
+                                <a href="#" class="text-sm text-primary hover:underline">Forgot password?</a>
+                            </div>
+
+                            <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-lg font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-primary/25 hover:scale-105" data-implementation="Should authenticate and redirect to dashboard">
+                                Sign In
+                            </button>
+                        </form>
+
+                        <div class="mt-6">
+                            <div class="relative">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-border"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-2 bg-card text-muted-foreground">Or continue with</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 grid grid-cols-2 gap-3">
+                                <button class="w-full glass-card py-3 rounded-lg font-medium text-foreground hover:bg-white/5 transition-all duration-200 hover:scale-105">
+                                    <i class="fab fa-google mr-2"></i>Google
+                                </button>
+                                <button class="w-full glass-card py-3 rounded-lg font-medium text-foreground hover:bg-white/5 transition-all duration-200 hover:scale-105">
+                                    <i class="fab fa-github mr-2"></i>GitHub
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 text-center">
+                            <p class="text-muted-foreground">
+                                Don't have an account? 
+                                <button onclick="showPage('signup')" class="text-primary hover:underline font-medium">Sign up</button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- @END_COMPONENT: SigninPage -->
+
+        <!-- @COMPONENT: DashboardPage [protected page with responsive grid layout] -->
+        <div id="dashboard-page" class="page-content hidden">
+            <!-- @STATE: isAuthenticated:boolean = true -->
+            <div class="p-6 max-w-7xl mx-auto">
+                <!-- Dashboard Header -->
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 animate-fade-in">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">Trading Dashboard</h1>
+                        <p class="text-muted-foreground" data-bind="user.name" data-mock="true">Welcome back, Alex Johnson</p>
+                    </div>
+                    <div class="flex items-center space-x-4 mt-4 lg:mt-0">
+                        <button class="glass-card px-4 py-2 rounded-lg hover:bg-white/5 transition-all duration-200">
+                            <i class="fas fa-bell mr-2"></i>Alerts
+                        </button>
+                        <button class="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg transition-all duration-200">
+                            <i class="fas fa-plus mr-2"></i>New Trade
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Portfolio Value -->
+                    <div class="glass-card p-6 rounded-xl animate-slide-up">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-muted-foreground">Portfolio Value</h3>
+                            <i class="fas fa-wallet text-primary"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-foreground" data-mock="true" data-bind="portfolio.totalValue">$127,532.84</div>
+                        <div class="flex items-center mt-2">
+                            <i class="fas fa-arrow-up text-accent text-sm mr-1"></i>
+                            <span class="text-accent text-sm font-medium" data-mock="true">+2.4% ($3,127)</span>
+                        </div>
+                    </div>
+
+                    <!-- Daily P&L -->
+                    <div class="glass-card p-6 rounded-xl animate-slide-up" style="animation-delay: 0.1s;">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-muted-foreground">Daily P&L</h3>
+                            <i class="fas fa-chart-line text-accent"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-foreground" data-mock="true" data-bind="portfolio.dailyPnL">+$1,847.92</div>
+                        <div class="flex items-center mt-2">
+                            <i class="fas fa-arrow-up text-accent text-sm mr-1"></i>
+                            <span class="text-accent text-sm font-medium" data-mock="true">+1.47%</span>
+                        </div>
+                    </div>
+
+                    <!-- Open Positions -->
+                    <div class="glass-card p-6 rounded-xl animate-slide-up" style="animation-delay: 0.2s;">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-muted-foreground">Open Positions</h3>
+                            <i class="fas fa-layer-group text-primary"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-foreground" data-mock="true" data-bind="portfolio.openPositions">12</div>
+                        <div class="flex items-center mt-2">
+                            <span class="text-muted-foreground text-sm" data-mock="true">8 Long, 4 Short</span>
+                        </div>
+                    </div>
+
+                    <!-- Buying Power -->
+                    <div class="glass-card p-6 rounded-xl animate-slide-up" style="animation-delay: 0.3s;">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-muted-foreground">Buying Power</h3>
+                            <i class="fas fa-dollar-sign text-accent"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-foreground" data-mock="true" data-bind="portfolio.buyingPower">$45,267.13</div>
+                        <div class="flex items-center mt-2">
+                            <span class="text-muted-foreground text-sm" data-mock="true">Available for trading</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Dashboard Grid -->
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <!-- Chart Section -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Main Chart -->
+                        <div class="glass-card p-6 rounded-xl animate-slide-up">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-semibold">Portfolio Performance</h3>
+                                <div class="flex items-center space-x-2">
+                                    <button class="text-sm px-3 py-1 bg-primary text-primary-foreground rounded-lg">1D</button>
+                                    <button class="text-sm px-3 py-1 text-muted-foreground hover:text-foreground transition-colors">1W</button>
+                                    <button class="text-sm px-3 py-1 text-muted-foreground hover:text-foreground transition-colors">1M</button>
+                                    <button class="text-sm px-3 py-1 text-muted-foreground hover:text-foreground transition-colors">1Y</button>
+                                </div>
+                            </div>
+                            <!-- @FUNCTIONALITY: This should implement Chart.js or Recharts with real-time data -->
+                            <div class="chart-placeholder h-80 rounded-lg flex items-center justify-center">
+                                <div class="text-center">
+                                    <i class="fas fa-chart-area text-primary text-4xl mb-4"></i>
+                                    <p class="text-muted-foreground">Portfolio performance chart will render here</p>
+                                    <p class="text-sm text-muted-foreground mt-2">Using Chart.js or Recharts with real-time data</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Trades -->
+                        <div class="glass-card p-6 rounded-xl animate-slide-up">
+                            <h3 class="text-lg font-semibold mb-6">Recent Trades</h3>
+                            <div class="space-y-4">
+                                <!-- @MAP: recentTrades.map(trade => ( -->
+                                <div class="flex items-center justify-between p-4 bg-muted/20 rounded-lg" data-mock="true">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-chart-line text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium" data-bind="trade.symbol">AAPL</div>
+                                            <div class="text-sm text-muted-foreground" data-bind="trade.action">Buy 100 shares</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-medium" data-bind="trade.price">$175.32</div>
+                                        <div class="text-sm text-accent" data-bind="trade.pnl">+$247.50</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-4 bg-muted/20 rounded-lg" data-mock="true">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-chart-line text-accent"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium" data-bind="trade.symbol">TSLA</div>
+                                            <div class="text-sm text-muted-foreground" data-bind="trade.action">Sell 50 shares</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-medium" data-bind="trade.price">$267.89</div>
+                                        <div class="text-sm text-destructive" data-bind="trade.pnl">-$132.75</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between p-4 bg-muted/20 rounded-lg" data-mock="true">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-chart-line text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium" data-bind="trade.symbol">MSFT</div>
+                                            <div class="text-sm text-muted-foreground" data-bind="trade.action">Buy 75 shares</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-medium" data-bind="trade.price">$387.45</div>
+                                        <div class="text-sm text-accent" data-bind="trade.pnl">+$421.13</div>
+                                    </div>
+                                </div>
+                                <!-- @END_MAP )) -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Widgets -->
+                    <div class="space-y-6">
+                        <!-- Market Overview -->
+                        <div class="glass-card p-6 rounded-xl animate-slide-up">
+                            <h3 class="text-lg font-semibold mb-6">Market Overview</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between" data-mock="true">
+                                    <div>
+                                        <div class="font-medium">S&P 500</div>
+                                        <div class="text-sm text-muted-foreground">SPX</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-medium" data-bind="market.sp500.value">4,327.81</div>
+                                        <div class="text-sm text-accent" data-bind="market.sp500.change">+0.82%</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between" data-mock="true">
+                                    <div>
+                                        <div class="font-medium">NASDAQ</div>
+                                        <div class="text-sm text-muted-foreground">IXIC</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-medium" data-bind="market.nasdaq.value">13,567.98</div>
+                                        <div class="text-sm text-destructive" data-bind="market.nasdaq.change">-0.34%</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between" data-mock="true">
+                                    <div>
+                                        <div class="font-medium">DOW</div>
+                                        <div class="text-sm text-muted-foreground">DJI</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-medium" data-bind="market.dow.value">34,721.12</div>
+                                        <div class="text-sm text-accent" data-bind="market.dow.change">+1.15%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Watchlist -->
+                        <div class="glass-card p-6 rounded-xl animate-slide-up">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-semibold">Watchlist</h3>
+                                <button class="text-primary hover:text-primary/80 transition-colors">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="space-y-4">
+                                <!-- @MAP: watchlist.map(stock => ( -->
+                                <div class="flex items-center justify-between" data-mock="true">
+                                    <div>
+                                        <div class="font-medium" data-bind="stock.symbol">AAPL</div>
+                                        <div class="text-sm text-muted-foreground" data-bind="stock.name">Apple Inc.</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-medium" data-bind="stock.price">$175.32</div>
+                                        <div class="text-sm text-accent" data-bind="stock.change">+2.4%</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between" data-mock="true">
+                                    <div>
+                                        <div class="font-medium" data-bind="stock.symbol">GOOGL</div>
+                                        <div class="text-sm text-muted-foreground" data-bind="stock.name">Alphabet Inc.</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-medium" data-bind="stock.price">$2,847.63</div>
+                                        <div class="text-sm text-destructive" data-bind="stock.change">-0.8%</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between" data-mock="true">
+                                    <div>
+                                        <div class="font-medium" data-bind="stock.symbol">AMZN</div>
+                                        <div class="text-sm text-muted-foreground" data-bind="stock.name">Amazon.com Inc.</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-medium" data-bind="stock.price">$3,134.26</div>
+                                        <div class="text-sm text-accent" data-bind="stock.change">+1.7%</div>
+                                    </div>
+                                </div>
+                                <!-- @END_MAP )) -->
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="glass-card p-6 rounded-xl animate-slide-up">
+                            <h3 class="text-lg font-semibold mb-6">Quick Actions</h3>
+                            <div class="space-y-3">
+                                <button class="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-lg transition-all duration-200 hover:scale-105">
+                                    <i class="fas fa-plus mr-2"></i>Place Order
+                                </button>
+                                <button class="w-full glass-card py-3 rounded-lg hover:bg-white/5 transition-all duration-200 hover:scale-105">
+                                    <i class="fas fa-chart-line mr-2"></i>Market Analysis
+                                </button>
+                                <button class="w-full glass-card py-3 rounded-lg hover:bg-white/5 transition-all duration-200 hover:scale-105">
+                                    <i class="fas fa-download mr-2"></i>Export Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: DashboardPage -->
+    </div>
+
+    <script>
+        // Page navigation system
+        (function() {
+            const pages = ['home', 'about', 'signup', 'signin', 'dashboard'];
+            
+            window.showPage = function(pageName) {
+                // Hide all pages
+                pages.forEach(page => {
+                    const pageElement = document.getElementById(`${page}-page`);
+                    if (pageElement) {
+                        pageElement.classList.add('hidden');
+                    }
+                });
+                
+                // Show selected page
+                const targetPage = document.getElementById(`${pageName}-page`);
+                if (targetPage) {
+                    targetPage.classList.remove('hidden');
+                    
+                    // Add fade-in animation to page content
+                    targetPage.style.opacity = '0';
+                    targetPage.style.transform = 'translateY(20px)';
+                    
+                    requestAnimationFrame(() => {
+                        targetPage.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        targetPage.style.opacity = '1';
+                        targetPage.style.transform = 'translateY(0)';
+                    });
+                }
+                
+                // Update navbar active state
+                updateNavbar(pageName);
+            };
+            
+            function updateNavbar(activePage) {
+                const navLinks = document.querySelectorAll('.nav-link');
+                navLinks.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href === `#${activePage}`) {
+                        link.classList.add('text-primary');
+                        link.classList.remove('text-muted-foreground');
+                    } else {
+                        link.classList.remove('text-primary');
+                        link.classList.add('text-muted-foreground');
+                    }
+                });
+            }
+            
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('open');
+                    
+                    const icon = mobileMenuBtn.querySelector('i');
+                    if (mobileMenu.classList.contains('open')) {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                    } else {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+                
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                        mobileMenu.classList.remove('open');
+                        const icon = mobileMenuBtn.querySelector('i');
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+            }
+            
+            // Floating label functionality
+            function setupFloatingLabels() {
+                const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]');
+                
+                inputs.forEach(input => {
+                    const label = input.nextElementSibling;
+                    
+                    if (label && label.classList.contains('floating-label')) {
+                        // Check if input has value on page load
+                        if (input.value) {
+                            label.classList.add('active');
+                        }
+                        
+                        input.addEventListener('focus', function() {
+                            label.classList.add('active');
+                        });
+                        
+                        input.addEventListener('blur', function() {
+                            if (!input.value) {
+                                label.classList.remove('active');
+                            }
+                        });
+                        
+                        input.addEventListener('input', function() {
+                            if (input.value) {
+                                label.classList.add('active');
+                            } else {
+                                label.classList.remove('active');
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // Smooth scrolling for navigation links
+            function setupSmoothScrolling() {
+                const navLinks = document.querySelectorAll('a[href^="#"]');
+                
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const targetId = this.getAttribute('href').slice(1);
+                        
+                        if (targetId && pages.includes(targetId)) {
+                            showPage(targetId);
+                        }
+                    });
+                });
+            }
+            
+            // Authentication simulation
+            window.simulateAuth = function() {
+                // TODO: Implement actual authentication logic
+                // For demo purposes, assume user is authenticated
+                localStorage.setItem('authToken', 'demo-jwt-token');
+                showPage('dashboard');
+            };
+            
+            // Form submission handlers
+            function setupFormHandlers() {
+                // Signup form
+                const signupForm = document.querySelector('#signup-page form');
+                if (signupForm) {
+                    signupForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        // TODO: Implement actual signup API call
+                        console.log('Signup form submitted');
+                        simulateAuth();
+                    });
+                }
+                
+                // Signin form
+                const signinForm = document.querySelector('#signin-page form');
+                if (signinForm) {
+                    signinForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        // TODO: Implement actual signin API call
+                        console.log('Signin form submitted');
+                        simulateAuth();
+                    });
+                }
+            }
+            
+            // Route protection
+            function checkAuthAndRedirect() {
+                const token = localStorage.getItem('authToken');
+                const currentPage = getCurrentPage();
+                
+                if (currentPage === 'dashboard' && !token) {
+                    showPage('signin');
+                }
+            }
+            
+            function getCurrentPage() {
+                const visiblePage = document.querySelector('.page-content:not(.hidden)');
+                if (visiblePage) {
+                    return visiblePage.id.replace('-page', '');
+                }
+                return 'home';
+            }
+            
+            // Initialize application
+            function init() {
+                setupFloatingLabels();
+                setupSmoothScrolling();
+                setupFormHandlers();
+                checkAuthAndRedirect();
+                
+                // Show home page by default
+                showPage('home');
+                
+                // Add intersection observer for scroll animations
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }
+                    });
+                }, observerOptions);
+                
+                // Observe elements with animation classes
+                document.querySelectorAll('.animate-slide-up, .animate-fade-in').forEach(el => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(30px)';
+                    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    observer.observe(el);
+                });
+            }
+            
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
+    </script>
+</body>
+</html>
