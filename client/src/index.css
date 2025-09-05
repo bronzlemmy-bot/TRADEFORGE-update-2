@@ -35,6 +35,16 @@
   /* Custom font variables */
   --font-sans: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  
+  /* Sidebar variables */
+  --sidebar-background: hsl(217, 32%, 17%);
+  --sidebar-foreground: hsl(210, 40%, 96%);
+  --sidebar-primary: hsl(217, 91%, 60%);
+  --sidebar-primary-foreground: hsl(222, 84%, 4%);
+  --sidebar-accent: hsl(217, 32%, 22%);
+  --sidebar-accent-foreground: hsl(210, 40%, 98%);
+  --sidebar-border: hsl(217, 32%, 17%);
+  --sidebar-ring: hsl(217, 91%, 60%);
 }
 
 .dark {
@@ -62,6 +72,16 @@
   --chart-3: hsl(32, 95%, 44%);
   --chart-4: hsl(346, 87%, 43%);
   --chart-5: hsl(262, 83%, 58%);
+  
+  /* Sidebar variables for dark mode */
+  --sidebar-background: hsl(217, 32%, 17%);
+  --sidebar-foreground: hsl(210, 40%, 96%);
+  --sidebar-primary: hsl(217, 91%, 60%);
+  --sidebar-primary-foreground: hsl(222, 84%, 4%);
+  --sidebar-accent: hsl(217, 32%, 22%);
+  --sidebar-accent-foreground: hsl(210, 40%, 98%);
+  --sidebar-border: hsl(217, 32%, 17%);
+  --sidebar-ring: hsl(217, 91%, 60%);
 }
 
 @layer base {
