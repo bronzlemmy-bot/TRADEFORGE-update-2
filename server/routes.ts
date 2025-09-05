@@ -504,38 +504,205 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { amount, currency, address } = req.body;
       
-      if (!amount || amount <= 0) {
-        return res.status(400).json({ message: "Invalid amount" });
+      // Enhanced validation
+      if (!amount || amount <= 0 || isNaN(amount)) {
+        return res.status(400).json({ message: "Please enter a valid amount greater than 0" });
       }
       
       if (!address || !address.trim()) {
-        return res.status(400).json({ message: "Address is required" });
+        return res.status(400).json({ message: "Withdrawal address is required" });
+      }
+      
+      if (!currency || !['btc', 'usd'].includes(currency.toLowerCase())) {
+        return res.status(400).json({ message: "Invalid currency selected" });
       }
 
-      // Simulate balance check
+      // Enhanced balance and minimum checks
       const balances = { btc: 0.05423789, usd: 15420.50 };
       const availableBalance = currency === 'btc' ? balances.btc : balances.usd;
+      const minimumWithdraw = currency === 'btc' ? 0.001 : 10;
+      const fee = currency === 'btc' ? 0.0005 : 5;
+      
+      if (amount < minimumWithdraw) {
+        return res.status(400).json({ 
+          message: `Minimum withdrawal amount is ${currency === 'btc' ? '0.001 BTC' : '$10'}` 
+        });
+      }
       
       if (amount > availableBalance) {
-        return res.status(400).json({ message: "Insufficient balance" });
+        return res.status(400).json({ 
+          message: `Insufficient balance. Available: ${availableBalance} ${currency.toUpperCase()}` 
+        });
+      }
+      
+      // Check if amount covers the fee
+      if (amount <= fee) {
+        return res.status(400).json({ 
+          message: `Amount must be greater than network fee of ${currency === 'btc' ? '0.0005 BTC' : '$5'}` 
+        });
+      }
+
+      // Enhanced address validation
+      if (currency === 'btc') {
+        // Basic Bitcoin address validation
+        if (!address.match(/^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,62}$/)) {
+          return res.status(400).json({ message: "Invalid Bitcoin address format" });
+        }
       }
 
       const withdrawal = {
         id: `with${Date.now()}`,
-        amount,
-        currency,
-        address,
-        fee: currency === 'btc' ? 0.0005 : 5,
+        amount: parseFloat(amount.toFixed(currency === 'btc' ? 8 : 2)),
+        currency: currency.toLowerCase(),
+        address: address.trim(),
+        fee,
+        netAmount: amount - fee,
         status: "pending",
         createdAt: new Date().toISOString()
       };
       
       res.status(201).json({ 
         message: "Withdrawal request submitted successfully", 
-        withdrawal 
+        withdrawal,
+        estimatedArrival: currency === 'btc' ? '30-60 minutes' : '1-3 business days'
       });
     } catch (error: any) {
       res.status(400).json({ message: error.message || "Failed to process withdrawal" });
+    }
+  });
+  
+  // Market Analysis endpoints
+  app.get("/api/market/analysis", authenticateToken, async (req: any, res) => {
+    try {
+      const marketData = [
+        {
+          symbol: "AAPL",
+          name: "Apple Inc.",
+          price: 175.32,
+          change: 4.23,
+          changePercent: 2.47,
+          volume: 89234567,
+          marketCap: 2756789000000,
+          analysis: {
+            recommendation: "BUY",
+            confidence: 87,
+            supportLevel: 168.50,
+            resistanceLevel: 182.00,
+            rsi: 64.2,
+            macd: "Bullish",
+            sentiment: "Bullish"
+          },
+          news: [
+            {
+              title: "Apple Reports Strong Q4 Earnings",
+              summary: "Apple exceeded expectations with iPhone sales driving revenue growth.",
+              impact: "positive",
+              timestamp: new Date().toISOString()
+            },
+            {
+              title: "New iPhone Models Drive Market Interest",
+              summary: "Latest iPhone release showing strong pre-order numbers.",
+              impact: "positive",
+              timestamp: new Date(Date.now() - 3600000).toISOString()
+            }
+          ]
+        },
+        {
+          symbol: "TSLA",
+          name: "Tesla Inc.",
+          price: 267.89,
+          change: -8.45,
+          changePercent: -3.06,
+          volume: 45678901,
+          marketCap: 856789000000,
+          analysis: {
+            recommendation: "HOLD",
+            confidence: 73,
+            supportLevel: 255.00,
+            resistanceLevel: 280.00,
+            rsi: 45.8,
+            macd: "Bearish",
+            sentiment: "Neutral"
+          },
+          news: [
+            {
+              title: "Tesla Production Numbers Mixed",
+              summary: "Q4 production met expectations but guidance remains cautious.",
+              impact: "neutral",
+              timestamp: new Date(Date.now() - 7200000).toISOString()
+            }
+          ]
+        },
+        {
+          symbol: "GOOGL",
+          name: "Alphabet Inc.",
+          price: 2847.63,
+          change: 12.89,
+          changePercent: 0.45,
+          volume: 23456789,
+          marketCap: 1823456000000,
+          analysis: {
+            recommendation: "BUY",
+            confidence: 92,
+            supportLevel: 2780.00,
+            resistanceLevel: 2950.00,
+            rsi: 58.4,
+            macd: "Bullish",
+            sentiment: "Bullish"
+          },
+          news: [
+            {
+              title: "Google AI Advances Show Promise",
+              summary: "New AI developments position Google strongly in the market.",
+              impact: "positive",
+              timestamp: new Date(Date.now() - 1800000).toISOString()
+            }
+          ]
+        },
+        {
+          symbol: "MSFT",
+          name: "Microsoft Corporation",
+          price: 387.45,
+          change: 2.67,
+          changePercent: 0.69,
+          volume: 34567890,
+          marketCap: 2876543000000,
+          analysis: {
+            recommendation: "BUY",
+            confidence: 85,
+            supportLevel: 375.00,
+            resistanceLevel: 400.00,
+            rsi: 61.2,
+            macd: "Bullish",
+            sentiment: "Bullish"
+          },
+          news: [
+            {
+              title: "Microsoft Cloud Revenue Grows",
+              summary: "Azure and Office 365 continue strong growth trajectory.",
+              impact: "positive",
+              timestamp: new Date(Date.now() - 5400000).toISOString()
+            }
+          ]
+        }
+      ];
+      res.json(marketData);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to fetch market analysis" });
+    }
+  });
+  
+  app.get("/api/market/indices", authenticateToken, async (req: any, res) => {
+    try {
+      const indices = {
+        sp500: { value: 4327.81, change: 0.82 },
+        nasdaq: { value: 13567.98, change: -0.34 },
+        dow: { value: 34721.12, change: 1.15 },
+        vix: { value: 18.42, change: -2.1 }
+      };
+      res.json(indices);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to fetch market indices" });
     }
   });
 

@@ -508,7 +508,7 @@ export default function Dashboard() {
                       <Plus className="w-4 h-4 mr-2" />
                       Place Order
                     </Button>
-                    <Button variant="outline" className="w-full justify-start glass-card" data-testid="quick-action-market-analysis">
+                    <Button variant="outline" className="w-full justify-start glass-card" data-testid="quick-action-market-analysis" onClick={() => navigate("/market-analysis")}>
                       <BarChart3 className="w-4 h-4 mr-2" />
                       Market Analysis
                     </Button>

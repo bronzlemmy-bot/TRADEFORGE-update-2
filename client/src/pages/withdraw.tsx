@@ -94,8 +94,8 @@ export default function WithdrawPage() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     
-    if (!withdrawAmount || parseFloat(withdrawAmount) <= 0) {
-      newErrors.amount = "Please enter a valid amount";
+    if (!withdrawAmount || isNaN(parseFloat(withdrawAmount)) || parseFloat(withdrawAmount) <= 0) {
+      newErrors.amount = "Please enter a valid amount greater than 0";
     }
     
     if (!withdrawAddress.trim()) {
@@ -104,16 +104,30 @@ export default function WithdrawPage() {
     
     const amount = parseFloat(withdrawAmount);
     const availableBalance = withdrawCurrency === 'btc' ? balance?.btc || 0 : balance?.usd || 0;
-    
-    if (amount > availableBalance) {
-      newErrors.amount = "Insufficient balance";
-    }
+    const fee = withdrawCurrency === 'btc' ? 0.0005 : 5;
     
     // Minimum withdrawal limits
     if (withdrawCurrency === 'btc' && amount < 0.001) {
       newErrors.amount = "Minimum withdrawal: 0.001 BTC";
     } else if (withdrawCurrency === 'usd' && amount < 10) {
       newErrors.amount = "Minimum withdrawal: $10";
+    }
+    
+    // Check if amount covers the fee
+    if (amount <= fee) {
+      newErrors.amount = `Amount must be greater than network fee of ${withdrawCurrency === 'btc' ? '0.0005 BTC' : '$5'}`;
+    }
+    
+    if (amount > availableBalance) {
+      newErrors.amount = `Insufficient balance. Available: ${availableBalance} ${withdrawCurrency.toUpperCase()}`;
+    }
+    
+    // Enhanced address validation
+    if (withdrawCurrency === 'btc' && withdrawAddress.trim()) {
+      // Basic Bitcoin address validation
+      if (!withdrawAddress.match(/^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,62}$/)) {
+        newErrors.address = "Invalid Bitcoin address format. Please enter a valid Bitcoin address.";
+      }
     }
     
     setErrors(newErrors);
@@ -228,23 +242,78 @@ export default function WithdrawPage() {
 
                 <div>
                   <Label htmlFor="amount">Amount</Label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    step="any"
-                    placeholder={`Enter amount in ${withdrawCurrency.toUpperCase()}`}
-                    value={withdrawAmount}
-                    onChange={(e) => setWithdrawAmount(e.target.value)}
-                    className={errors.amount ? "border-red-500" : ""}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="amount"
+                      type="number"
+                      step={withdrawCurrency === 'btc' ? '0.00000001' : '0.01'}
+                      min={withdrawCurrency === 'btc' ? '0.001' : '10'}
+                      max={withdrawCurrency === 'btc' ? balance?.btc || 0 : balance?.usd || 0}
+                      placeholder={`Enter amount in ${withdrawCurrency.toUpperCase()}`}
+                      value={withdrawAmount}
+                      onChange={(e) => {
+                        setWithdrawAmount(e.target.value);
+                        // Clear errors when user starts typing
+                        if (errors.amount) {
+                          setErrors({ ...errors, amount: '' });
+                        }
+                      }}
+                      className={errors.amount ? "border-red-500" : ""}
+                    />
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">
+                      {withdrawCurrency.toUpperCase()}
+                    </div>
+                  </div>
                   {errors.amount && <p className="text-red-500 text-sm mt-1">{errors.amount}</p>}
                   <div className="flex justify-between text-sm text-muted-foreground mt-1">
                     <span>
-                      Available: {withdrawCurrency === 'btc' ? `${balance?.btc || 0} BTC` : `$${balance?.usd || 0}`}
+                      Available: {withdrawCurrency === 'btc' ? `${balance?.btc || 0} BTC` : `$${(balance?.usd || 0).toLocaleString()}`}
                     </span>
                     <span>
-                      Min: {withdrawCurrency === 'btc' ? '0.001 BTC' : '$10'}
+                      Min: {withdrawCurrency === 'btc' ? '0.001 BTC' : '$10'} | Fee: {withdrawCurrency === 'btc' ? '0.0005 BTC' : '$5'}
                     </span>
+                  </div>
+                  {/* Quick amount buttons */}
+                  <div className="flex space-x-2 mt-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const maxAmount = withdrawCurrency === 'btc' ? balance?.btc || 0 : balance?.usd || 0;
+                        const fee = withdrawCurrency === 'btc' ? 0.0005 : 5;
+                        const netMax = Math.max(0, maxAmount - fee);
+                        setWithdrawAmount(netMax.toString());
+                      }}
+                    >
+                      Max
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const halfAmount = withdrawCurrency === 'btc' 
+                          ? ((balance?.btc || 0) / 2).toFixed(8)
+                          : ((balance?.usd || 0) / 2).toFixed(2);
+                        setWithdrawAmount(halfAmount);
+                      }}
+                    >
+                      50%
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const quarterAmount = withdrawCurrency === 'btc' 
+                          ? ((balance?.btc || 0) / 4).toFixed(8)
+                          : ((balance?.usd || 0) / 4).toFixed(2);
+                        setWithdrawAmount(quarterAmount);
+                      }}
+                    >
+                      25%
+                    </Button>
                   </div>
                 </div>
 
@@ -252,41 +321,64 @@ export default function WithdrawPage() {
                   <Label htmlFor="address">
                     {withdrawCurrency === 'btc' ? 'Bitcoin Address' : 'Bank Account / Wallet Address'}
                   </Label>
-                  <Input
-                    id="address"
-                    placeholder={
-                      withdrawCurrency === 'btc' 
-                        ? 'Enter Bitcoin address' 
-                        : 'Enter bank account or wallet address'
-                    }
-                    value={withdrawAddress}
-                    onChange={(e) => setWithdrawAddress(e.target.value)}
-                    className={errors.address ? "border-red-500" : ""}
-                  />
+                  <div className="space-y-2">
+                    <Input
+                      id="address"
+                      placeholder={
+                        withdrawCurrency === 'btc' 
+                          ? 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh' 
+                          : 'Enter bank account or wallet address'
+                      }
+                      value={withdrawAddress}
+                      onChange={(e) => {
+                        setWithdrawAddress(e.target.value);
+                        // Clear errors when user starts typing
+                        if (errors.address) {
+                          setErrors({ ...errors, address: '' });
+                        }
+                      }}
+                      className={`font-mono text-sm ${errors.address ? "border-red-500" : ""}`}
+                    />
+                    {withdrawCurrency === 'btc' && (
+                      <p className="text-xs text-muted-foreground">
+                        Supported formats: Legacy (1...), P2SH (3...), Bech32 (bc1...)
+                      </p>
+                    )}
+                  </div>
                   {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
                 </div>
 
-                {/* Fee Summary */}
-                {withdrawAmount && (
-                  <div className="bg-muted/20 rounded-lg p-4 space-y-2">
-                    <h4 className="font-semibold">Transaction Summary</h4>
-                    <div className="space-y-1 text-sm">
+                {/* Enhanced Fee Summary */}
+                {withdrawAmount && !isNaN(parseFloat(withdrawAmount)) && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800 space-y-3"
+                  >
+                    <h4 className="font-semibold flex items-center">
+                      <DollarSign className="w-4 h-4 mr-2 text-blue-500" />
+                      Transaction Summary
+                    </h4>
+                    <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span>Withdrawal Amount:</span>
-                        <span>{withdrawAmount} {withdrawCurrency.toUpperCase()}</span>
+                        <span className="text-muted-foreground">Withdrawal Amount:</span>
+                        <span className="font-medium">{parseFloat(withdrawAmount).toFixed(withdrawCurrency === 'btc' ? 8 : 2)} {withdrawCurrency.toUpperCase()}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Network Fee:</span>
-                        <span>{fee.display}</span>
+                        <span className="text-muted-foreground">Network Fee:</span>
+                        <span className="text-orange-600 font-medium">{fee.display}</span>
                       </div>
-                      <div className="flex justify-between font-medium border-t pt-2">
+                      <div className="flex justify-between items-center font-medium border-t pt-2 text-base">
                         <span>You'll Receive:</span>
-                        <span className={netAmount < 0 ? 'text-red-500' : ''}>
+                        <span className={`${netAmount < 0 ? 'text-red-500' : 'text-green-600'} font-bold`}>
                           {Math.max(0, netAmount).toFixed(withdrawCurrency === 'btc' ? 8 : 2)} {withdrawCurrency.toUpperCase()}
                         </span>
                       </div>
+                      <div className="text-xs text-muted-foreground pt-1">
+                        Estimated arrival: {withdrawCurrency === 'btc' ? '30-60 minutes' : '1-3 business days'}
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
 
                 <Alert>
@@ -301,13 +393,39 @@ export default function WithdrawPage() {
 
                 <Button
                   onClick={handleWithdraw}
-                  disabled={withdrawMutation.isPending || !withdrawAmount || !withdrawAddress}
+                  disabled={withdrawMutation.isPending || !withdrawAmount || !withdrawAddress || Object.values(errors).some(error => error)}
                   className="w-full"
                   size="lg"
                 >
                   <Send className="w-4 h-4 mr-2" />
-                  {withdrawMutation.isPending ? "Processing..." : "Withdraw Funds"}
+                  {withdrawMutation.isPending ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Processing Withdrawal...
+                    </>
+                  ) : (
+                    `Withdraw ${withdrawAmount ? `${parseFloat(withdrawAmount).toFixed(withdrawCurrency === 'btc' ? 4 : 2)} ${withdrawCurrency.toUpperCase()}` : 'Funds'}`
+                  )}
                 </Button>
+                
+                {/* Success Message */}
+                {withdrawMutation.isSuccess && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-center space-x-3"
+                  >
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    <div>
+                      <p className="font-medium text-green-800 dark:text-green-200">
+                        Withdrawal Request Submitted Successfully!
+                      </p>
+                      <p className="text-sm text-green-600 dark:text-green-300">
+                        Your withdrawal is being processed and will arrive in {withdrawCurrency === 'btc' ? '30-60 minutes' : '1-3 business days'}.
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
               </div>
             </CardContent>
           </Card>

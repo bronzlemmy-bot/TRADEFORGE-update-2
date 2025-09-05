@@ -16,6 +16,7 @@ import Signal from "@/pages/signal";
 import CopyExpert from "@/pages/copy-expert";
 import DepositBitcoin from "@/pages/deposit-bitcoin";
 import Withdraw from "@/pages/withdraw";
+import MarketAnalysis from "@/pages/market-analysis";
 import Assets from "@/pages/assets";
 import NotFound from "@/pages/not-found";
 
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/dashboard/copyexpert" component={CopyExpert} />
       <Route path="/dashboard/deposit-bitcoin" component={DepositBitcoin} />
       <Route path="/dashboard/withdraw" component={Withdraw} />
+      <Route path="/market-analysis" component={MarketAnalysis} />
       <Route path="/dashboard/assets" component={Assets} />
       <Route component={NotFound} />
     </Switch>
