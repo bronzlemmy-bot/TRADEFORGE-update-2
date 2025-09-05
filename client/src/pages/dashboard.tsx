@@ -18,6 +18,40 @@ import {
   Download
 } from "lucide-react";
 
+interface DashboardData {
+  user: {
+    id: string;
+    email: string;
+    fullName: string;
+  };
+  portfolio: {
+    totalValue: number;
+    dailyPnL: number;
+    dailyPnLPercent: number;
+    openPositions: number;
+    buyingPower: number;
+  };
+  recentTrades: Array<{
+    id: number;
+    symbol: string;
+    action: string;
+    price: number;
+    pnl: number;
+    timestamp: string;
+  }>;
+  watchlist: Array<{
+    symbol: string;
+    name: string;
+    price: number;
+    change: number;
+  }>;
+  marketOverview: {
+    sp500: { value: number; change: number };
+    nasdaq: { value: number; change: number };
+    dow: { value: number; change: number };
+  };
+}
+
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
@@ -42,7 +76,7 @@ export default function Dashboard() {
     }
   }, [navigate]);
 
-  const { data: dashboardData, isLoading } = useQuery({
+  const { data: dashboardData, isLoading } = useQuery<DashboardData>({
     queryKey: ["/api/user/dashboard"],
     enabled: authService.isAuthenticated(),
     staleTime: 5 * 60 * 1000, // 5 minutes
