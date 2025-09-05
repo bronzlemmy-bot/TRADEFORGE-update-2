@@ -9,6 +9,9 @@ import About from "@/pages/about";
 import Signup from "@/pages/signup";
 import Signin from "@/pages/signin";
 import Dashboard from "@/pages/dashboard";
+import Profile from "@/pages/profile";
+import BuyBitcoin from "@/pages/buy-bitcoin";
+import Assets from "@/pages/assets";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -19,6 +22,9 @@ function Router() {
       <Route path="/signup" component={Signup} />
       <Route path="/signin" component={Signin} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/dashboard/profile" component={Profile} />
+      <Route path="/dashboard/buy-bitcoin" component={BuyBitcoin} />
+      <Route path="/dashboard/assets" component={Assets} />
       <Route component={NotFound} />
     </Switch>
   );

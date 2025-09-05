@@ -551,7 +551,7 @@ export default function Dashboard() {
                       <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton
                           isActive={item.isActive}
-                          onClick={() => setCurrentPage(item.url)}
+                          onClick={() => navigate(item.url)}
                           data-testid={`sidebar-${item.title.toLowerCase().replace(/\s+/g, '-')}`}
                         >
                           <item.icon className="w-4 h-4" />

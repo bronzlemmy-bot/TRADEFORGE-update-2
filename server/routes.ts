@@ -165,6 +165,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Protected profile route
+  app.get("/api/user/profile", authenticateToken, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Return mock profile data
+      const profileData = {
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        accountType: "Premium",
+        memberSince: "January 2023",
+        totalTrades: 247,
+        successRate: 73.6,
+        verificationStatus: "Verified",
+        twoFactorEnabled: true,
+        lastLogin: "Today at 10:23 AM",
+      };
+
+      res.json(profileData);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to fetch profile data" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
