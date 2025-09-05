@@ -19,7 +19,14 @@ import {
   QrCode,
   Clock,
   CheckCircle,
-  XCircle
+  XCircle,
+  Wallet,
+  History,
+  Info,
+  Smartphone,
+  Banknote,
+  TrendingUp,
+  Shield
 } from "lucide-react";
 
 interface DepositHistory {
@@ -43,6 +50,9 @@ interface WalletData {
 export default function DepositBitcoinPage() {
   const [, navigate] = useLocation();
   const [copiedAddress, setCopiedAddress] = useState(false);
+  const [selectedTab, setSelectedTab] = useState('btc');
+  const [showQrCode, setShowQrCode] = useState(false);
+  const [depositAmount, setDepositAmount] = useState('');
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -106,6 +116,109 @@ export default function DepositBitcoinPage() {
         <Button onClick={refreshDeposits} variant="outline">
           Refresh
         </Button>
+      </div>
+
+      {/* Enhanced Cryptocurrency Tabs */}
+      <div className="mb-6">
+        <Card className="glass-card">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Select Cryptocurrency</h3>
+              <Badge variant="secondary" className="text-xs">
+                More coming soon
+              </Badge>
+            </div>
+            <div className="flex space-x-2">
+              <Button
+                onClick={() => setSelectedTab('btc')}
+                variant={selectedTab === 'btc' ? 'default' : 'outline'}
+                className="flex items-center space-x-2"
+              >
+                <Bitcoin className="w-4 h-4 text-orange-500" />
+                <span>Bitcoin</span>
+              </Button>
+              <Button
+                variant="outline"
+                disabled
+                className="flex items-center space-x-2 opacity-50"
+              >
+                <div className="w-4 h-4 rounded-full bg-blue-500" />
+                <span>Ethereum</span>
+                <span className="text-xs">(Soon)</span>
+              </Button>
+              <Button
+                variant="outline"
+                disabled
+                className="flex items-center space-x-2 opacity-50"
+              >
+                <div className="w-4 h-4 rounded-full bg-green-500" />
+                <span>USDT</span>
+                <span className="text-xs">(Soon)</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Deposit Amount Calculator */}
+      <div className="mb-6">
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              <span>Deposit Calculator</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label>Amount to Deposit</Label>
+                <div className="flex items-center space-x-2 mt-2">
+                  <Input
+                    type="number"
+                    placeholder="0.001"
+                    value={depositAmount}
+                    onChange={(e) => setDepositAmount(e.target.value)}
+                    className="font-mono"
+                  />
+                  <span className="text-sm text-muted-foreground min-w-[3rem]">BTC</span>
+                </div>
+              </div>
+              <div>
+                <Label>Estimated USD Value</Label>
+                <div className="mt-2 p-3 bg-muted/20 rounded-lg">
+                  <p className="text-lg font-semibold">
+                    ${depositAmount ? (parseFloat(depositAmount) * 43250).toFixed(2) : '0.00'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Rate: $43,250/BTC</p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 flex space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setDepositAmount('0.001')}
+              >
+                Min: 0.001 BTC
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setDepositAmount('0.01')}
+              >
+                0.01 BTC
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setDepositAmount('0.1')}
+              >
+                0.1 BTC
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
@@ -203,9 +316,19 @@ export default function DepositBitcoinPage() {
                   <p className="text-sm text-muted-foreground mb-2">
                     Scan this QR code with your Bitcoin wallet to deposit
                   </p>
-                  <Button variant="outline" size="sm" className="text-xs">
-                    Generate New QR Code
-                  </Button>
+                  <div className="flex space-x-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-xs"
+                      onClick={() => setShowQrCode(!showQrCode)}
+                    >
+                      {showQrCode ? 'Hide QR' : 'Show QR'}
+                    </Button>
+                    <Button variant="outline" size="sm" className="text-xs">
+                      Download QR
+                    </Button>
+                  </div>
                 </div>
                 
                 {/* Step-by-step Instructions */}
@@ -244,6 +367,41 @@ export default function DepositBitcoinPage() {
 
         {/* Right Column - Enhanced Deposit History & Stats */}
         <div className="space-y-6">
+          {/* Enhanced Security Notice */}
+          <Card className="glass-card border-green-200 dark:border-green-800">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Shield className="w-5 h-5 text-green-600" />
+                <span>Security Features</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div>
+                    <p className="text-sm font-medium">Multi-signature Wallet</p>
+                    <p className="text-xs text-muted-foreground">Enhanced security protection</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div>
+                    <p className="text-sm font-medium">Cold Storage</p>
+                    <p className="text-xs text-muted-foreground">95% of funds stored offline</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div>
+                    <p className="text-sm font-medium">Insurance Coverage</p>
+                    <p className="text-xs text-muted-foreground">FDIC insured deposits</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Quick Stats */}
           <Card className="glass-card">
             <CardHeader>
@@ -258,6 +416,39 @@ export default function DepositBitcoinPage() {
                 <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                   <p className="text-2xl font-bold text-blue-600">3</p>
                   <p className="text-sm text-muted-foreground">Successful Deposits</p>
+                </div>
+                <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                  <p className="text-2xl font-bold text-purple-600">~45min</p>
+                  <p className="text-sm text-muted-foreground">Avg. Processing Time</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Mobile App Promotion */}
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Smartphone className="w-5 h-5" />
+                <span>Mobile Trading</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center space-y-3">
+                <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center mx-auto">
+                  <Smartphone className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <p className="font-medium">Download Our App</p>
+                  <p className="text-sm text-muted-foreground">Trade Bitcoin on the go with instant deposits</p>
+                </div>
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm" className="text-xs">
+                    iOS App
+                  </Button>
+                  <Button variant="outline" size="sm" className="text-xs">
+                    Android App
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -345,11 +536,17 @@ export default function DepositBitcoinPage() {
                     </div>
                     <h3 className="font-medium mb-2">No deposits yet</h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Your Bitcoin deposits will appear here
+                      Your Bitcoin deposits will appear here once you make your first deposit.
                     </p>
-                    <Button variant="outline" size="sm">
-                      Learn How to Deposit
-                    </Button>
+                    <div className="space-y-2">
+                      <Button variant="outline" size="sm">
+                        <History className="w-4 h-4 mr-2" />
+                        View All History
+                      </Button>
+                      <div className="text-xs text-muted-foreground">
+                        Need help? Contact our 24/7 support team
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

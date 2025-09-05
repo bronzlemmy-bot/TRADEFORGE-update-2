@@ -419,7 +419,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const walletData = {
         address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
         balance: 0.05423789,
-        pendingDeposits: 0.001
+        pendingDeposits: 0.001,
+        totalDeposited: 0.02443,
+        successfulDeposits: 3,
+        averageProcessingTime: 45,
+        networkFee: 0.00001,
+        minDeposit: 0.0001,
+        maxDeposit: 10.0,
+        exchangeRate: 43250
       };
       res.json(walletData);
     } catch (error: any) {
@@ -438,7 +445,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           confirmations: 2,
           requiredConfirmations: 3,
           network: "Bitcoin",
-          createdAt: new Date().toISOString()
+          usdValue: 43.25,
+          estimatedArrival: "25 minutes",
+          createdAt: new Date(Date.now() - 1200000).toISOString()
         },
         {
           id: "dep2",
@@ -449,7 +458,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
           confirmations: 6,
           requiredConfirmations: 3,
           network: "Bitcoin",
-          createdAt: new Date(Date.now() - 3600000).toISOString()
+          usdValue: 1012.05,
+          processingTime: "42 minutes",
+          createdAt: new Date(Date.now() - 7200000).toISOString()
+        },
+        {
+          id: "dep3",
+          amount: 0.00043,
+          address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+          txHash: "b2c3d4e5f6789012345678901234567890abcdef123456789012345678901234a",
+          status: "confirmed",
+          confirmations: 15,
+          requiredConfirmations: 3,
+          network: "Bitcoin",
+          usdValue: 18.60,
+          processingTime: "38 minutes",
+          createdAt: new Date(Date.now() - 86400000).toISOString()
         }
       ];
       res.json(deposits);
