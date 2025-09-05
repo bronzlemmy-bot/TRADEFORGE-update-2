@@ -3,6 +3,8 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, Bot, Shield, Smartphone, Clock, Users } from "lucide-react";
+import { Testimonials } from "@/components/testimonials";
+import { FooterTop, FooterBottom } from "@/components/footer";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -153,6 +155,13 @@ export default function Home() {
           ))}
         </motion.div>
       </section>
+      
+      {/* Testimonials Section */}
+      <Testimonials />
+      
+      {/* Footer */}
+      <FooterTop />
+      <FooterBottom />
     </div>
   );
 }

@@ -186,32 +186,92 @@ export default function DepositBitcoinPage() {
             </CardContent>
           </Card>
 
-          {/* QR Code */}
+          {/* Enhanced QR Code and Instructions */}
           <Card className="glass-card">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <QrCode className="w-5 h-5" />
-                <span>QR Code</span>
+                <span>QR Code & Instructions</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center">
-                <div className="w-48 h-48 bg-muted/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <QrCode className="w-24 h-24 text-muted-foreground" />
+              <div className="space-y-6">
+                <div className="text-center">
+                  <div className="w-48 h-48 bg-gradient-to-br from-orange-100 to-yellow-100 dark:from-orange-900/20 dark:to-yellow-900/20 rounded-lg flex items-center justify-center mx-auto mb-4 border border-orange-200 dark:border-orange-800">
+                    <QrCode className="w-24 h-24 text-orange-600" />
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Scan this QR code with your Bitcoin wallet to deposit
+                  </p>
+                  <Button variant="outline" size="sm" className="text-xs">
+                    Generate New QR Code
+                  </Button>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Scan this QR code with your Bitcoin wallet to deposit
-                </p>
+                
+                {/* Step-by-step Instructions */}
+                <div className="bg-muted/20 rounded-lg p-4">
+                  <h4 className="font-semibold mb-3 flex items-center">
+                    <Bitcoin className="w-4 h-4 mr-2 text-orange-500" />
+                    How to Deposit Bitcoin
+                  </h4>
+                  <ol className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start">
+                      <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">1</span>
+                      <span>Open your Bitcoin wallet app</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">2</span>
+                      <span>Scan the QR code or copy the address above</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">3</span>
+                      <span>Enter the amount you want to deposit</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">4</span>
+                      <span>Confirm and send the transaction</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">5</span>
+                      <span>Wait for 3 confirmations (usually 30-60 minutes)</span>
+                    </li>
+                  </ol>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Right Column - Deposit History */}
+        {/* Right Column - Enhanced Deposit History & Stats */}
         <div className="space-y-6">
+          {/* Quick Stats */}
           <Card className="glass-card">
             <CardHeader>
-              <CardTitle>Recent Deposits</CardTitle>
+              <CardTitle>Deposit Statistics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-4">
+                <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <p className="text-2xl font-bold text-green-600">0.02443</p>
+                  <p className="text-sm text-muted-foreground">Total Deposited (BTC)</p>
+                </div>
+                <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <p className="text-2xl font-bold text-blue-600">3</p>
+                  <p className="text-sm text-muted-foreground">Successful Deposits</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Enhanced Deposit History */}
+          <Card className="glass-card">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Recent Deposits</CardTitle>
+                <Button variant="outline" size="sm" onClick={refreshDeposits}>
+                  Refresh
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -221,42 +281,75 @@ export default function DepositBitcoinPage() {
                       key={deposit.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="border rounded-lg p-4 space-y-2"
+                      className="border rounded-lg p-4 space-y-3 bg-gradient-to-r from-white to-gray-50 dark:from-gray-900 dark:to-gray-800"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-medium">{deposit.amount} BTC</span>
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
+                            <Bitcoin className="w-5 h-5 text-orange-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{deposit.amount} BTC</p>
+                            <p className="text-sm text-muted-foreground">
+                              ${(deposit.amount * 43250).toFixed(2)} USD
+                            </p>
+                          </div>
+                        </div>
                         <Badge
                           variant={
                             deposit.status === 'confirmed' ? 'default' :
                             deposit.status === 'pending' ? 'secondary' :
                             'destructive'
                           }
+                          className="flex items-center space-x-1"
                         >
-                          {deposit.status === 'confirmed' && <CheckCircle className="w-3 h-3 mr-1" />}
-                          {deposit.status === 'pending' && <Clock className="w-3 h-3 mr-1" />}
-                          {deposit.status === 'failed' && <XCircle className="w-3 h-3 mr-1" />}
-                          {deposit.status}
+                          {deposit.status === 'confirmed' && <CheckCircle className="w-3 h-3" />}
+                          {deposit.status === 'pending' && <Clock className="w-3 h-3" />}
+                          {deposit.status === 'failed' && <XCircle className="w-3 h-3" />}
+                          <span>{deposit.status}</span>
                         </Badge>
                       </div>
                       
-                      <div className="text-sm text-muted-foreground">
-                        <p>Network: {deposit.network}</p>
+                      <div className="grid grid-cols-1 gap-2 text-xs text-muted-foreground bg-muted/20 rounded p-3">
+                        <div className="flex justify-between">
+                          <span>Network:</span>
+                          <span className="font-medium">{deposit.network}</span>
+                        </div>
                         {deposit.status === 'pending' && (
-                          <p>Confirmations: {deposit.confirmations}/{deposit.requiredConfirmations}</p>
+                          <div className="flex justify-between">
+                            <span>Confirmations:</span>
+                            <span className="font-medium text-yellow-600">
+                              {deposit.confirmations}/{deposit.requiredConfirmations}
+                            </span>
+                          </div>
                         )}
                         {deposit.txHash && (
-                          <p className="truncate">
-                            Tx: {deposit.txHash.slice(0, 16)}...
-                          </p>
+                          <div className="flex justify-between">
+                            <span>Transaction:</span>
+                            <span className="font-mono text-xs">
+                              {deposit.txHash.slice(0, 16)}...
+                            </span>
+                          </div>
                         )}
-                        <p>{new Date(deposit.createdAt).toLocaleString()}</p>
+                        <div className="flex justify-between">
+                          <span>Time:</span>
+                          <span>{new Date(deposit.createdAt).toLocaleString()}</span>
+                        </div>
                       </div>
                     </motion.div>
                   ))
                 ) : (
-                  <div className="text-center py-8">
-                    <ArrowDownToLine className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">No deposits yet</p>
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center mx-auto mb-4">
+                      <ArrowDownToLine className="w-8 h-8 text-orange-600" />
+                    </div>
+                    <h3 className="font-medium mb-2">No deposits yet</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Your Bitcoin deposits will appear here
+                    </p>
+                    <Button variant="outline" size="sm">
+                      Learn How to Deposit
+                    </Button>
                   </div>
                 )}
               </div>
