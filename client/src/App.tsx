@@ -11,6 +11,11 @@ import Signin from "@/pages/signin";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import BuyBitcoin from "@/pages/buy-bitcoin";
+import Bot from "@/pages/bot";
+import Signal from "@/pages/signal";
+import CopyExpert from "@/pages/copy-expert";
+import DepositBitcoin from "@/pages/deposit-bitcoin";
+import Withdraw from "@/pages/withdraw";
 import Assets from "@/pages/assets";
 import NotFound from "@/pages/not-found";
 
@@ -24,6 +29,11 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/dashboard/profile" component={Profile} />
       <Route path="/dashboard/buy-bitcoin" component={BuyBitcoin} />
+      <Route path="/dashboard/bot" component={Bot} />
+      <Route path="/dashboard/signal" component={Signal} />
+      <Route path="/dashboard/copyexpert" component={CopyExpert} />
+      <Route path="/dashboard/deposit-bitcoin" component={DepositBitcoin} />
+      <Route path="/dashboard/withdraw" component={Withdraw} />
       <Route path="/dashboard/assets" component={Assets} />
       <Route component={NotFound} />
     </Switch>
